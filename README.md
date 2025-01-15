@@ -14,7 +14,7 @@ In order to run the tests, it is critical that the development server is up
 first:
 
 ```bash
-npm run dev & npx wait-on http://localhost:3000
+npm run dev
 ```
 
 You may view and interact with the application at
