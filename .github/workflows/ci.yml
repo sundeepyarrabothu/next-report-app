@@ -1,31 +1,56 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on pushes to the main branch
   pull_request:
     branches:
-      - main
+      - main  # Trigger on pull requests to the main branch
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: 18
+          node-version: '14'
 
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+      - name: Install dependencies
+        run: npm install
 
-      - name: Run Build
+      - name: Run build
         run: npm run build
 
-      - name: Run Tests
+      - name: Run unit tests
         run: npm test
+
+  deploy:
+    needs: build-and-test  # Ensure this job runs only after build-and-test succeeds
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the application
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
